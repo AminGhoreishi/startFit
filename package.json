@@ -57,12 +57,5 @@
   "browserslist": [
     "defaults and fully supports es6-module",
     "maintained node versions"
-  ],
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "@ckeditor/ckeditor5-react",
-      "bcrypt",
-      "unrs-resolver"
-    ]
-  }
+  ]
 }

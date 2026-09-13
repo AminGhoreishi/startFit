@@ -1,3 +1,4 @@
-ignoredBuiltDependencies:
-  - sharp
+onlyBuiltDependencies:
+  - "@ckeditor/ckeditor5-react"
+  - bcrypt
   - unrs-resolver
