@@ -9,6 +9,7 @@ import type {
 } from "@/types/checkout";
 import CheckoutPendingVerification from "./CheckoutPendingVerification";
 import CheckoutCardSection from "./CheckoutCardSection";
+import { formatNumber } from "@/utils/numbers";
 
 export default function CheckoutPage({ order }: CheckoutPageClientProps) {
   const [copied, setCopied] = useState<boolean>(false);
@@ -23,10 +24,6 @@ export default function CheckoutPage({ order }: CheckoutPageClientProps) {
 
   const cardNumber = "6219861843440891";
   const formattedCardNumber = "6219  8618  4344  0891";
-
-  const formatNumber = (num: number): string => {
-    return new Intl.NumberFormat("fa-IR").format(num || 0);
-  };
 
   const handleCopyCard = async () => {
     try {

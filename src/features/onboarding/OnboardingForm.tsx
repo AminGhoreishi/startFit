@@ -81,17 +81,7 @@ export default function OnboardingForm({ initialProfile }: OnboardingFormProps) 
 
   useEffect(() => {
     if (activeProfile) {
-      reset({
-        goal: activeProfile.goal || "general_fitness",
-        sessionsPerWeek: activeProfile.sessionsPerWeek || 3,
-        equipment: activeProfile.equipment || "none",
-        trainingExperience: activeProfile.trainingExperience || "beginner",
-        ageYears: activeProfile.ageYears || 25,
-        heightCm: activeProfile.heightCm || 175,
-        weightKg: activeProfile.weightKg || 70,
-        bodyPhotos: activeProfile.bodyPhotos || [],
-        notes: activeProfile.notes || "",
-      });
+      reset();
     }
   }, [activeProfile, reset]);
 

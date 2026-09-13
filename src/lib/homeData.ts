@@ -88,7 +88,7 @@ export const getHomePlans = unstable_cache(
           slug: pkg.slug || pkg._id.toString(),
           title: pkg.name,
           description: pkg.tagline || pkg.description || "",
-          duration: "۱۲ هفته",
+          duration: "یک ماه",
           level: "همه سطوح",
           icon: pkg.icon || "💪",
           features:

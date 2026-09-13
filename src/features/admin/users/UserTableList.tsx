@@ -169,8 +169,8 @@ export default function UserTableList() {
   };
 
   return (
-    <>
-      <div className="bg-white/5 backdrop-blur-lg border border-white/10 rounded-xl p-6 mb-6 font-danaMed">
+    <div className="font-danaMed">
+      <div className="bg-white/5 backdrop-blur-lg border border-white/10 rounded-xl p-6 mb-6">
         <div className="flex flex-col md:flex-row gap-4">
           <div className="flex-1 relative">
             <Search className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/50" />
@@ -203,7 +203,7 @@ export default function UserTableList() {
         </div>
       </div>
 
-      <div className="bg-white/5 backdrop-blur-lg border border-white/10 rounded-xl overflow-hidden shadow-2xl font-danaMed">
+      <div className="bg-white/5  backdrop-blur-lg border border-white/10 rounded-xl overflow-hidden shadow-2xl font-danaMed">
         <div className="overflow-x-auto">
           <table className="w-full text-right border-collapse">
             <thead className="bg-white/5 border-b border-white/10">
@@ -335,7 +335,7 @@ export default function UserTableList() {
                     </td>
                     <td className="p-4">
                       <span
-                        className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-[10px] font-semibold border ${getStatusBadge(user.status)}`}
+                        className={`inline-flex items-center  gap-1 px-3 py-1 rounded-full text-[10px] font-semibold border ${getStatusBadge(user.status)}`}
                       >
                         {user.status === "فعال" && (
                           <CheckCircle className="w-3 h-3" />
@@ -360,7 +360,7 @@ export default function UserTableList() {
                       {user.createdAt ? new Date(user.createdAt).toLocaleDateString("fa-IR") : "—"}
                     </td>
                     <td className="p-4">
-                      <span className="text-white font-medium font-morabbaReg">
+                      <span className="text-white font-medium font-danaMed">
                         {user.totalPayments
                           ? formatNumber(user.totalPayments)
                           : "۰"}
@@ -492,6 +492,6 @@ export default function UserTableList() {
           }}
         />
       )}
-    </>
+    </div>
   );
 }
