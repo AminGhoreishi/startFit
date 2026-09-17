@@ -43,7 +43,7 @@ function ArticleMainContent({
         </div>
       </div>
 
-      <article className="mb-10 text-neutral-300 leading-8 text-sm sm:text-base space-y-4">
+      <article className="mb-10 text-neutral-300 leading-8 text-sm sm:text-base space-y-4 [&_strong]:text-amber-500">
         <div
           className="ck-content-view"
           dangerouslySetInnerHTML={{ __html: content }}

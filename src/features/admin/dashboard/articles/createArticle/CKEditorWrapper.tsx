@@ -36,6 +36,39 @@ export default function CKEditorWrapper({
           "undo",
           "redo",
         ],
+        heading: {
+          options: [
+            {
+              model: "paragraph",
+              title: "پاراگراف",
+              class: "ck-heading_paragraph",
+            },
+            {
+              model: "heading1",
+              view: "h1",
+              title: "تیتر ۱ (H1)",
+              class: "ck-heading_heading1",
+            },
+            {
+              model: "heading2",
+              view: "h2",
+              title: "تیتر ۲ (H2)",
+              class: "ck-heading_heading2",
+            },
+            {
+              model: "heading3",
+              view: "h3",
+              title: "تیتر ۳ (H3)",
+              class: "ck-heading_heading3",
+            },
+            {
+              model: "heading4",
+              view: "h4",
+              title: "تیتر ۴ (H4)",
+              class: "ck-heading_heading4",
+            },
+          ],
+        },
       }}
     />
   );
