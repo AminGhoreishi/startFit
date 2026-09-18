@@ -11,7 +11,6 @@ import type {
 } from "@/types/ticket";
 import TicketStatsCards from "./TicketStatsCards";
 import TicketSidebarList from "./TicketSidebarList";
-import TicketChatPanel from "./TicketChatPanel";
 
 const fetcher = async (url: string): Promise<AdminTicketsApiResponse> => {
   const res = await fetch(url);
@@ -133,32 +132,22 @@ export default function AdminTicketsContainer({
           formatNumber={(num) => new Intl.NumberFormat("fa-IR").format(num || 0)}
         />
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-          <div className="lg:col-span-5">
-            <TicketSidebarList
-              tickets={data?.tickets || []}
-              selectedTicket={selectedTicket}
-              onSelectTicket={handleSelectTicket}
-              filterStatus={filterStatus}
-              setFilterStatus={handleFilterStatusChange}
-              searchQuery={searchQuery}
-              setSearchQuery={handleSearchChange}
-              isLoading={isLoading}
-              currentPage={currentPage}
-              totalPages={data?.totalPages || 1}
-              totalItems={data?.total || 0}
-              pageSize={PAGE_SIZE}
-              onPageChange={setCurrentPage}
-            />
-          </div>
-
-          <div className="lg:col-span-7">
-            <TicketChatPanel
-              ticket={selectedTicket}
-              mutate={mutate}
-              onTicketDeleted={() => setSelectedTicketId(null)}
-            />
-          </div>
+        <div className="w-full">
+          <TicketSidebarList
+            tickets={data?.tickets || []}
+            selectedTicket={selectedTicket}
+            onSelectTicket={handleSelectTicket}
+            filterStatus={filterStatus}
+            setFilterStatus={handleFilterStatusChange}
+            searchQuery={searchQuery}
+            setSearchQuery={handleSearchChange}
+            isLoading={isLoading}
+            currentPage={currentPage}
+            totalPages={data?.totalPages || 1}
+            totalItems={data?.total || 0}
+            pageSize={PAGE_SIZE}
+            onPageChange={setCurrentPage}
+          />
         </div>
       </div>
     </div>

@@ -1,73 +1,14 @@
+import Link from "next/link";
 import { Search, MessageSquare } from "lucide-react";
-import type { TicketSidebarListProps, TicketFilterOption } from "@/types/ticket";
+import type { TicketSidebarListProps } from "@/types/ticket";
 import Pagination from "@/components/common/Pagination";
-
-const FILTER_OPTIONS: TicketFilterOption[] = [
-  { key: "all", label: "همه" },
-  { key: "pending", label: "در انتظار" },
-  { key: "answered", label: "پاسخ‌داده" },
-  { key: "closed", label: "بسته" },
-];
-
-const getStatusBadge = (status: string) => {
-  switch (status) {
-    case "pending":
-      return "bg-amber-500/15 text-amber-400 border-amber-500/30";
-    case "answered":
-      return "bg-emerald-500/15 text-emerald-400 border-emerald-500/30";
-    case "closed":
-      return "bg-white/10 text-white/50 border-white/20";
-    default:
-      return "bg-white/10 text-white/50 border-white/20";
-  }
-};
-
-const getStatusLabel = (status: string) => {
-  switch (status) {
-    case "pending":
-      return "در انتظار پاسخ";
-    case "answered":
-      return "پاسخ داده شده";
-    case "closed":
-      return "بسته شده";
-    default:
-      return status;
-  }
-};
-
-const getCategoryBadge = (category: string) => {
-  switch (category) {
-    case "workout":
-      return "bg-blue-500/15 text-blue-400 border-blue-500/30";
-    case "nutrition":
-      return "bg-emerald-500/15 text-emerald-400 border-emerald-500/30";
-    case "form_check":
-      return "bg-purple-500/15 text-purple-400 border-purple-500/30";
-    case "injury":
-      return "bg-red-500/15 text-red-400 border-red-500/30";
-    case "technical":
-      return "bg-amber-500/15 text-amber-400 border-amber-500/30";
-    default:
-      return "bg-white/5 text-white/60 border-white/10";
-  }
-};
-
-const getCategoryLabel = (category: string) => {
-  switch (category) {
-    case "workout":
-      return "تمرین";
-    case "nutrition":
-      return "تغذیه";
-    case "form_check":
-      return "فرم حرکت";
-    case "injury":
-      return "آسیب / درد";
-    case "technical":
-      return "پشتیبانی فنی";
-    default:
-      return category;
-  }
-};
+import {
+  FILTER_OPTIONS,
+  getStatusBadge,
+  getStatusLabel,
+  getCategoryBadge,
+  getCategoryLabel,
+} from "./ticketHelpers";
 
 export default function TicketSidebarList({
   tickets,
@@ -144,10 +85,11 @@ export default function TicketSidebarList({
           {tickets.map((t) => {
             const isSelected = selectedTicket?._id === t._id;
             return (
-              <div
+              <Link
                 key={t._id}
+                href={`/admin/tickets/${t._id}`}
                 onClick={() => onSelectTicket(t)}
-                className={`p-4 rounded-2xl border cursor-pointer transition-all flex flex-col gap-2.5 ${
+                className={`p-4 rounded-2xl border cursor-pointer transition-all flex flex-col gap-2.5 block ${
                   isSelected
                     ? "bg-gradient-to-br from-amber-500/20 via-amber-400/10 to-transparent border-amber-400 shadow-xl"
                     : "bg-white/5 border-white/10 text-white hover:bg-white/10 hover:border-white/20"
@@ -193,7 +135,7 @@ export default function TicketSidebarList({
                     </span>
                   </div>
                 </div>
-              </div>
+              </Link>
             );
           })}
         </div>

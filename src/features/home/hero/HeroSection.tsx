@@ -73,6 +73,7 @@ export default function HeroSection() {
                 sizes="(max-width: 640px) 100vw, (max-width: 1024px) 450px, 500px"
                 className="object-cover transition-transform duration-700 group-hover:scale-105"
                 priority
+                fetchPriority="high"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-950/20 to-transparent opacity-90 pointer-events-none" />
 
