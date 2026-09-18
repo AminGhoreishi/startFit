@@ -261,8 +261,8 @@ export interface AdminSubscriberUsersApiResponse {
 
 export interface UserTicketSidebarListProps {
   tickets: IClientTicket[];
-  selectedTicket: IClientTicket | null;
-  onSelectTicket: (ticket: IClientTicket) => void;
+  selectedTicket?: IClientTicket | null;
+  onSelectTicket?: (ticket: IClientTicket) => void;
   filterStatus: "all" | "pending" | "answered" | "closed";
   setFilterStatus: (status: "all" | "pending" | "answered" | "closed") => void;
   isLoading?: boolean;

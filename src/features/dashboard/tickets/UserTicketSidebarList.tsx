@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { MessageSquare } from "lucide-react";
 import type { UserTicketSidebarListProps } from "@/types/ticket";
 import AppPagination from "@/components/common/AppPagination";
@@ -74,10 +75,10 @@ export default function UserTicketSidebarList({
             const isCoachMessage = t.initiatedBy === "coach";
 
             return (
-              <div
+              <Link
                 key={t._id}
-                onClick={() => onSelectTicket(t)}
-                className={`p-4 rounded-2xl border cursor-pointer transition-all flex flex-col gap-2.5 ${
+                href={`/dashboard/tickets/${t._id}`}
+                className={`p-4 rounded-2xl border cursor-pointer transition-all flex flex-col gap-2.5 block ${
                   isSelected
                     ? "bg-gradient-to-br from-amber-500/20 via-amber-400/10 to-transparent border-amber-400 shadow-xl"
                     : "bg-white/5 border-white/10 text-white hover:bg-white/10 hover:border-white/20"
@@ -133,7 +134,7 @@ export default function UserTicketSidebarList({
                     </span>
                   </div>
                 </div>
-              </div>
+              </Link>
             );
           })}
         </div>

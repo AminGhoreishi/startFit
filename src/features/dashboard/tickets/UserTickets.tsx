@@ -1,11 +1,10 @@
 "use client";
 
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState } from "react";
 import useSWR from "swr";
 import { Plus, ArrowRight, RefreshCw, AlertCircle } from "lucide-react";
-import type { IClientTicket, UserTicketsApiResponse } from "@/types/ticket";
+import type { UserTicketsApiResponse } from "@/types/ticket";
 import UserTicketSidebarList from "./UserTicketSidebarList";
-import UserTicketChatPanel from "./UserTicketChatPanel";
 import UserTicketForm from "./UserTicketForm";
 
 const fetcher = async (url: string): Promise<UserTicketsApiResponse> => {
@@ -20,15 +19,13 @@ const fetcher = async (url: string): Promise<UserTicketsApiResponse> => {
 };
 
 export default function UserTickets() {
-  const [selectedTicketId, setSelectedTicketId] = useState<string | null>(null);
   const [showCreateForm, setShowCreateForm] = useState<boolean>(false);
   const [filterStatus, setFilterStatus] = useState<
     "all" | "pending" | "answered" | "closed"
   >("all");
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const chatEndRef = useRef<HTMLDivElement>(null);
 
-  const PAGE_SIZE = 6;
+  const PAGE_SIZE = 8;
 
   const statusParam =
     filterStatus !== "all" ? `&status=${filterStatus}` : "";
@@ -45,56 +42,16 @@ export default function UserTickets() {
     dedupingInterval: 5000,
   });
 
-  const selectedTicket = useMemo(
-    () => data?.tickets?.find((t) => t._id === selectedTicketId) || null,
-    [data?.tickets, selectedTicketId]
-  );
-
-  useEffect(() => {
-    if (selectedTicket?.messages) {
-      chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    }
-  }, [selectedTicket?.messages?.length]);
-
   const handleFilterStatusChange = (
     status: "all" | "pending" | "answered" | "closed"
   ) => {
     setFilterStatus(status);
     setCurrentPage(1);
-    setSelectedTicketId(null);
   };
 
-  const handleTicketCreated = (newTicketId: string) => {
-    setSelectedTicketId(newTicketId);
+  const handleTicketCreated = () => {
     setShowCreateForm(false);
     mutate();
-  };
-
-  const handleSelectTicket = async (ticket: IClientTicket) => {
-    setSelectedTicketId(ticket._id);
-
-    if (ticket.readNotifications === false) {
-      mutate(
-        (currentData) => {
-          if (!currentData?.tickets) return currentData;
-          return {
-            ...currentData,
-            tickets: currentData.tickets.map((t) =>
-              t._id === ticket._id ? { ...t, readNotifications: true } : t
-            ),
-          };
-        },
-        false
-      );
-
-      try {
-        await fetch("/api/user/ticket/read", {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ ticketId: ticket._id }),
-        });
-      } catch {}
-    }
   };
 
   return (
@@ -169,39 +126,18 @@ export default function UserTickets() {
             onTicketCreated={handleTicketCreated}
           />
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-            <div
-              className={`lg:col-span-5 ${
-                selectedTicket ? "hidden lg:block" : "block"
-              }`}
-            >
-              <UserTicketSidebarList
-                tickets={data?.tickets || []}
-                selectedTicket={selectedTicket}
-                onSelectTicket={handleSelectTicket}
-                filterStatus={filterStatus}
-                setFilterStatus={handleFilterStatusChange}
-                isLoading={isLoading}
-                currentPage={currentPage}
-                totalPages={data?.totalPages || 1}
-                totalItems={data?.total || 0}
-                pageSize={PAGE_SIZE}
-                onPageChange={setCurrentPage}
-              />
-            </div>
-
-            <div
-              className={`lg:col-span-7 ${
-                !selectedTicket ? "hidden lg:block" : "block"
-              }`}
-            >
-              <UserTicketChatPanel
-                ticket={selectedTicket}
-                onBackToList={() => setSelectedTicketId(null)}
-                onTicketUpdated={() => mutate()}
-                chatEndRef={chatEndRef}
-              />
-            </div>
+          <div className="w-full">
+            <UserTicketSidebarList
+              tickets={data?.tickets || []}
+              filterStatus={filterStatus}
+              setFilterStatus={handleFilterStatusChange}
+              isLoading={isLoading}
+              currentPage={currentPage}
+              totalPages={data?.totalPages || 1}
+              totalItems={data?.total || 0}
+              pageSize={PAGE_SIZE}
+              onPageChange={setCurrentPage}
+            />
           </div>
         )}
       </div>

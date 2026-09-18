@@ -98,3 +98,8 @@ export const isVideo = (url?: string) => {
   const lowerUrl = url.toLowerCase().split("?")[0];
   return videoExtensions.some((ext) => lowerUrl.endsWith(ext));
 };
+
+export const isValidObjectId = (id?: string): boolean => {
+  if (!id) return false;
+  return /^[0-9a-fA-F]{24}$/.test(id);
+};
