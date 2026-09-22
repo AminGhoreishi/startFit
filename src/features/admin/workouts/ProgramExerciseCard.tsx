@@ -57,6 +57,12 @@ function ProgramExerciseCard({
         </div>
       </div>
 
+      {exercise.description && (
+        <p className="text-xs text-white/60 leading-relaxed bg-white/[0.03] border border-white/5 rounded-lg px-2.5 py-1.5 line-clamp-2">
+          {exercise.description}
+        </p>
+      )}
+
       <div className="grid grid-cols-3 gap-2 pt-2 border-t border-white/5 text-center text-[11px] text-white/70 ss02">
         <div className="bg-white/5 rounded-lg py-1 px-1.5">
           <span className="text-white/40 block text-[9px]">ست / تکرار</span>

@@ -327,31 +327,31 @@ export default function OrderPage({ packageData, email }: OrderPageProps) {
               </h2>
 
               <Suspense fallback={<OrderSummarySkeleton />}>
-                <div className="space-y-3 text-xs sm:text-sm text-zinc-300">
-                  <div className="flex justify-between">
+                <div className="space-y-3 text-xs sm:text-sm text-zinc-300 ss02">
+                  <div className="flex justify-between items-center">
                     <span className="text-zinc-400">قیمت پایه:</span>
-                    <span className="font-semibold">{formatFaNumber(basePrice)} تومان</span>
+                    <span className="font-semibold font-morabbaReg">{formatFaNumber(basePrice)} تومان</span>
                   </div>
 
                   {directDiscountPercent > 0 && (
-                    <div className="flex justify-between text-rose-400 font-semibold bg-rose-500/10 p-2 rounded-lg border border-rose-500/20">
+                    <div className="flex justify-between items-center text-rose-400 font-semibold bg-rose-500/10 p-2 rounded-lg border border-rose-500/20">
                       <span>تخفیف مستقیم پکیج ({directDiscountPercent}٪):</span>
-                      <span>-{formatFaNumber(directDiscountAmount)} تومان</span>
+                      <span className="font-morabbaReg">-{formatFaNumber(directDiscountAmount)} تومان</span>
                     </div>
                   )}
 
                   {couponApplied && (
-                    <div className="flex justify-between text-amber-400 font-semibold bg-amber-500/10 p-2 rounded-lg border border-amber-500/20">
+                    <div className="flex justify-between items-center text-amber-400 font-semibold bg-amber-500/10 p-2 rounded-lg border border-amber-500/20">
                       <span>کد تخفیف (۱۵٪):</span>
-                      <span>-{formatFaNumber(couponDiscountAmount)} تومان</span>
+                      <span className="font-morabbaReg">-{formatFaNumber(couponDiscountAmount)} تومان</span>
                     </div>
                   )}
                 </div>
 
-                <div className="my-4 sm:my-6 pt-4 border-t border-amber-500/20 flex justify-between items-center text-amber-100">
+                <div className="my-4 sm:my-6 pt-4 border-t border-amber-500/20 flex justify-between items-center text-amber-100 ss02">
                   <span className="text-xs sm:text-sm font-bold">مبلغ قابل پرداخت:</span>
                   <span
-                    className="text-lg sm:text-2xl font-morabbaBold font-extrabold text-amber-400"
+                    className="text-lg sm:text-2xl font-morabbaReg font-extrabold text-amber-400"
                   >
                     {formatFaNumber(finalPrice)} تومان
                   </span>

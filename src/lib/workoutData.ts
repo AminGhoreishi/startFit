@@ -63,6 +63,7 @@ export async function getUserWorkoutData(
     exercises: (p.exercises || []).map((ex, exIdx) => ({
       _id: ex._id || `ex-${idx}-${exIdx}`,
       name: ex.name,
+      description: ex.description || "",
       sets: ex.sets ?? 3,
       reps: ex.reps ?? "",
       weight: ex.weight ?? 0,

@@ -21,6 +21,7 @@ export default function WorkoutProgramForm({
   const [exercisesList, setExercisesList] = useState<ProgramExerciseItem[]>([]);
 
   const [exerciseName, setExerciseName] = useState("");
+  const [description, setDescription] = useState("");
   const [videoId, setVideoId] = useState("");
   const [videoId2, setVideoId2] = useState("");
   const [sets, setSets] = useState(3);
@@ -64,6 +65,7 @@ export default function WorkoutProgramForm({
 
     const newExercise: ProgramExerciseItem = {
       name: trimmed,
+      description: description.trim() || undefined,
       videoId: videoId || null,
       videoId2: videoId2 || null,
       sets: Number(sets) || 1,
@@ -75,6 +77,7 @@ export default function WorkoutProgramForm({
     setExercisesList((prev) => [...prev, newExercise]);
 
     setExerciseName("");
+    setDescription("");
     setVideoId("");
     setVideoId2("");
     setSets(3);
@@ -226,14 +229,32 @@ export default function WorkoutProgramForm({
             <span>افزودن حرکت تمرینی به این روز</span>
           </div>
 
-          <div>
-            <input
-              type="text"
-              value={exerciseName}
-              onChange={(e) => setExerciseName(e.target.value)}
-              placeholder="نام حرکت ورزشی (مثال: پرس بالاسینه هالتر)"
-              className="w-full bg-white/5 border border-white/10 rounded-xl px-3.5 py-2 text-white text-xs placeholder:text-white/30 focus:outline-none focus:border-amber-400 transition-colors"
-            />
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            <div>
+              <label className="block text-[11px] text-white/60 mb-1">
+                نام حرکت ورزشی
+              </label>
+              <input
+                type="text"
+                value={exerciseName}
+                onChange={(e) => setExerciseName(e.target.value)}
+                placeholder="مثال: پرس بالاسینه هالتر"
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-3.5 py-2 text-white text-xs placeholder:text-white/30 focus:outline-none focus:border-amber-400 transition-colors"
+              />
+            </div>
+
+            <div>
+              <label className="block text-[11px] text-white/60 mb-1">
+                توضیحات حرکت (اختیاری)
+              </label>
+              <input
+                type="text"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="مثال: مکث در اوج انقباض، سوپرست با حرکت بعد"
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-3.5 py-2 text-white text-xs placeholder:text-white/30 focus:outline-none focus:border-amber-400 transition-colors"
+              />
+            </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
@@ -303,13 +324,13 @@ export default function WorkoutProgramForm({
 
             <div>
               <label className="block text-[11px] text-white/60 mb-1">
-                وزنه / توضیحات
+                وزنه
               </label>
               <input
                 type="text"
                 value={weight}
                 onChange={(e) => setWeight(e.target.value)}
-                placeholder="مثلاً: 15 یا سوپر ست"
+                placeholder="مثلاً: 15"
                 className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-1.5 text-white text-xs focus:outline-none focus:border-amber-400 ss02"
               />
             </div>
@@ -350,13 +371,18 @@ export default function WorkoutProgramForm({
                   className="bg-white/5 border border-white/10 rounded-xl p-3 flex items-center justify-between gap-2 group hover:border-amber-500/30 transition-all"
                 >
                   <div className="flex items-center gap-2.5">
-                    <span className="w-5 h-5 rounded-md bg-amber-500/10 text-amber-400 text-[10px] font-bold flex items-center justify-center ss02">
+                    <span className="w-5 h-5 rounded-md bg-amber-500/10 text-amber-400 text-[10px] font-bold flex items-center justify-center shrink-0 ss02">
                       {idx + 1}
                     </span>
                     <div>
                       <div className="text-xs font-bold text-white">
                         {exercise.name}
                       </div>
+                      {exercise.description && (
+                        <div className="text-[10px] text-amber-300/80 mt-0.5 line-clamp-1">
+                          {exercise.description}
+                        </div>
+                      )}
                       <div className="text-[10px] text-white/50 flex items-center gap-2 mt-0.5 ss02">
                         <span>{exercise.sets} ست</span>
                         <span>•</span>

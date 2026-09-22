@@ -18,7 +18,9 @@ export default function DashboardLayout({
           </Suspense>
           <Suspense fallback={null}>{children}</Suspense>
         </MainWrapper>
-        <AdminSidebar />
+        <Suspense fallback={null}>
+          <AdminSidebar />
+        </Suspense>
       </div>
     </SidebarProvider>
   );

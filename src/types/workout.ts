@@ -117,6 +117,7 @@ export interface VideoInfo {
 export interface ExerciseItem {
   _id: string;
   name: string;
+  description?: string;
   sets: number;
   reps: string;
   weight?: number | string;
@@ -156,6 +157,7 @@ export interface IWorkoutPlan extends Document {
 
 export interface IProgramExercise {
   name: string;
+  description?: string;
   videoId?: mongoose.Types.ObjectId | null;
   videoId2?: mongoose.Types.ObjectId | null;
   sets: number;
@@ -168,6 +170,7 @@ export interface IProgramExercise {
 export interface ProgramExerciseItem {
   _id?: string;
   name: string;
+  description?: string;
   videoId?: string | null;
   videoId2?: string | null;
   sets: number;

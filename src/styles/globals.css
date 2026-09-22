@@ -10,6 +10,7 @@
   --font-danaLight: var(--font-danaLight);
   --font-morabbaReg: var(--font-morabbaReg);
   --font-morabeReg: var(--font-morabbaReg);
+  --font-morabbaBold: var(--font-morabbaReg);
 }
 
 @utility ss02 {

@@ -119,7 +119,7 @@ export async function DELETE(req: NextRequest) {
 export async function PATCH(req: NextRequest) {
   try {
     await dbConnect();
-    const { exerciseId, isComplete, weight } = await req.json();
+    const { exerciseId, isComplete, weight, description } = await req.json();
 
     if (!exerciseId) {
       return NextResponse.json({ message: "شناسه حرکت الزامی است" }, { status: 400 });
@@ -135,6 +135,9 @@ export async function PATCH(req: NextRequest) {
     }
     if (weight !== undefined) {
       updateFields["programs.$[].exercises.$[ex].weight"] = weight;
+    }
+    if (description !== undefined) {
+      updateFields["programs.$[].exercises.$[ex].description"] = description;
     }
 
     const program = await WorkoutProgram.findOneAndUpdate(

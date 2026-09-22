@@ -11,6 +11,7 @@ const WorkoutProgramSchema = new Schema<IWorkoutProgram>(
         exercises: [
           {
             name: { type: String, required: true },
+            description: { type: String, default: "" },
             videoId: { type: Schema.Types.ObjectId, ref: "Video", default: null },
             videoId2: { type: Schema.Types.ObjectId, ref: "Video", default: null },
             sets: { type: Number, default: 3 },

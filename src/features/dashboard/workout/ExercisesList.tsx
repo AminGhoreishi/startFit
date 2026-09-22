@@ -122,9 +122,11 @@ export default function ExercisesList({
       {exercises.map((exercise, idx) => {
         const isCompleted = !!completedExercises[exercise._id];
         const isExpanded = activeTipsId === exercise._id;
+        const videoDescription =
+          exercise.videoId?.description || exercise.videoId2?.description;
         const coachTips =
-          exercise.videoId?.description ||
-          exercise.videoId2?.description ||
+          exercise.description ||
+          videoDescription ||
           "لطفاً تمرکز روی بخش منفی و انقباض کامل عضله را در این حرکت حفظ کنید.";
 
         return (
@@ -168,6 +170,16 @@ export default function ExercisesList({
                   >
                     {exercise.name}
                   </h4>
+
+                  {exercise.description && (
+                    <p
+                      className={`text-xs sm:text-sm leading-relaxed transition-all pt-0.5 ${
+                        isCompleted ? "text-neutral-500 line-through" : "text-neutral-300"
+                      }`}
+                    >
+                      {exercise.description}
+                    </p>
+                  )}
 
                   <div className="flex flex-wrap max-sm:text-[12px]! items-center gap-x-4 gap-y-1 text-sm max-sm:text-xs text-neutral-400 pt-2 font-semibold font-mono">
                     <div className="flex items-center gap-1">
