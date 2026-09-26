@@ -4,13 +4,26 @@ import dbConnect from "@/lib/dbConnect";
 import User from "@/models/User";
 import Ban from "@/models/Ban";
 import { toEnglishDigits } from "@/utils/numbers";
+import { verifyTurnstileToken } from "@/lib/turnstile";
 
 export async function POST(req: NextRequest) {
   try {
     await dbConnect();
 
     const body = await req.json();
-    const { username, phone, password, confirmPassword } = body;
+    const { username, phone, password, confirmPassword, captchaToken } = body;
+
+    const ip =
+      req.headers.get("cf-connecting-ip") ||
+      req.headers.get("x-forwarded-for")?.split(",")[0]?.trim();
+
+    const isCaptchaValid = await verifyTurnstileToken(captchaToken, ip);
+    if (!isCaptchaValid) {
+      return NextResponse.json(
+        { message: "تأیید امنیتی کپچا ناموفق بود. لطفاً دوباره امتحان کنید" },
+        { status: 400 },
+      );
+    }
 
     if (!username || !phone || !password || !confirmPassword) {
       return NextResponse.json(

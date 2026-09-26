@@ -1,13 +1,16 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useEffect, Suspense } from "react";
+import { useState, useEffect, useRef, Suspense } from "react";
 import { useForm } from "react-hook-form";
 import { BiDumbbell, BiUser, BiPhone } from "react-icons/bi";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { signIn } from "next-auth/react";
 import { mutate } from "swr";
 import { useRouter, useSearchParams } from "next/navigation";
+import TurnstileWidget, {
+  TurnstileWidgetHandle,
+} from "@/components/common/TurnstileWidget";
 import type {
   LoginFormData,
   RegisterFormData,
@@ -18,9 +21,11 @@ import { toEnglishDigits } from "@/utils/numbers";
 function LoginFormContent() {
   const [isRegister, setIsRegister] = useState(false);
   const [serverError, setServerError] = useState("");
+  const [captchaToken, setCaptchaToken] = useState("");
   const [showRegisterPassword, setShowRegisterPassword] = useState(false);
   const [showRegisterConfirmPassword, setShowRegisterConfirmPassword] =
     useState(false);
+  const turnstileRef = useRef<TurnstileWidgetHandle>(null);
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -47,11 +52,18 @@ function LoginFormContent() {
   const handleTabChange = (registerMode: boolean) => {
     setIsRegister(registerMode);
     setServerError("");
+    setCaptchaToken("");
+    turnstileRef.current?.reset();
     loginForm.reset();
     registerForm.reset();
   };
 
   const onLogin = async (data: LoginFormData) => {
+    if (!captchaToken) {
+      setServerError("لطفاً تست اعتبارسنجی امنیتی را تیک بزنید");
+      return;
+    }
+
     setServerError("");
     const cleanPhone = toEnglishDigits(data.phone);
 
@@ -59,7 +71,11 @@ function LoginFormContent() {
       const res = await fetch("/api/auth/send-otp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phone: cleanPhone, type: "login" }),
+        body: JSON.stringify({
+          phone: cleanPhone,
+          type: "login",
+          captchaToken,
+        }),
       });
 
       const resData: AuthApiResponse = await res.json().catch(() => ({
@@ -68,6 +84,8 @@ function LoginFormContent() {
 
       if (!res.ok) {
         setServerError(resData.message || "خطایی رخ داده است");
+        turnstileRef.current?.reset();
+        setCaptchaToken("");
         return;
       }
 
@@ -76,10 +94,17 @@ function LoginFormContent() {
       );
     } catch {
       setServerError("خطا در ارتباط با سرور، لطفاً اتصال اینترنت خود را بررسی کنید");
+      turnstileRef.current?.reset();
+      setCaptchaToken("");
     }
   };
 
   const onRegister = async (data: RegisterFormData) => {
+    if (!captchaToken) {
+      setServerError("لطفاً تست اعتبارسنجی امنیتی را تیک بزنید");
+      return;
+    }
+
     setServerError("");
     const cleanPhone = toEnglishDigits(data.phone);
 
@@ -92,6 +117,7 @@ function LoginFormContent() {
           phone: cleanPhone,
           password: data.password,
           confirmPassword: data.confirmPassword,
+          captchaToken,
         }),
       });
 
@@ -101,6 +127,8 @@ function LoginFormContent() {
 
       if (!res.ok) {
         setServerError(resData.message || "خطایی رخ داده است");
+        turnstileRef.current?.reset();
+        setCaptchaToken("");
         return;
       }
 
@@ -113,6 +141,8 @@ function LoginFormContent() {
       if (signInRes?.error) {
         setServerError("ثبت‌نام انجام شد، لطفاً از بخش ورود وارد شوید");
         setIsRegister(false);
+        turnstileRef.current?.reset();
+        setCaptchaToken("");
         return;
       }
 
@@ -121,6 +151,8 @@ function LoginFormContent() {
       router.refresh();
     } catch {
       setServerError("خطا در ارتباط با سرور، لطفاً دوباره تلاش کنید");
+      turnstileRef.current?.reset();
+      setCaptchaToken("");
     }
   };
 
@@ -217,6 +249,14 @@ function LoginFormContent() {
                   </p>
                 )}
               </div>
+
+              <TurnstileWidget
+                key="login-turnstile"
+                ref={turnstileRef}
+                onSuccess={(token) => setCaptchaToken(token)}
+                onExpire={() => setCaptchaToken("")}
+                theme="dark"
+              />
 
               <button
                 type="submit"
@@ -374,6 +414,14 @@ function LoginFormContent() {
                   </p>
                 )}
               </div>
+
+              <TurnstileWidget
+                key="register-turnstile"
+                ref={turnstileRef}
+                onSuccess={(token) => setCaptchaToken(token)}
+                onExpire={() => setCaptchaToken("")}
+                theme="dark"
+              />
 
               <button
                 type="submit"

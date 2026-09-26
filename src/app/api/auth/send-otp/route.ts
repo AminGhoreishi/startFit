@@ -5,13 +5,26 @@ import Otp from "@/models/Otp";
 import Ban from "@/models/Ban";
 import { toEnglishDigits } from "@/utils/numbers";
 import type { IranPayamakPatternPayload } from "@/types/sms";
+import { verifyTurnstileToken } from "@/lib/turnstile";
 
 export async function POST(req: NextRequest) {
   try {
     await dbConnect();
 
     const body = await req.json();
-    const { phone, type } = body;
+    const { phone, type, captchaToken } = body;
+
+    const ip =
+      req.headers.get("cf-connecting-ip") ||
+      req.headers.get("x-forwarded-for")?.split(",")[0]?.trim();
+
+    const isCaptchaValid = await verifyTurnstileToken(captchaToken, ip);
+    if (!isCaptchaValid) {
+      return NextResponse.json(
+        { message: "تأیید امنیتی کپچا ناموفق بود. لطفاً دوباره امتحان کنید" },
+        { status: 400 }
+      );
+    }
 
     if (!phone) {
       return NextResponse.json(
