@@ -4,7 +4,6 @@ import type { ActiveSubscriptionProps } from "@/types/user-dashboard";
 
 export default function ActiveSubscription({
   subscription,
-  coachName,
 }: ActiveSubscriptionProps) {
   const progressPercent = subscription
     ? Math.round(
@@ -69,10 +68,6 @@ export default function ActiveSubscription({
               <span className="text-white">
                 {subscription.nextPayment} تومان
               </span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-neutral-400">مربی</span>
-              <span className="text-amber-400 font-medium">{coachName}</span>
             </div>
           </div>
         </>

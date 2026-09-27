@@ -1,4 +1,4 @@
-onlyBuiltDependencies:
-  - "@ckeditor/ckeditor5-react"
-  - bcrypt
-  - unrs-resolver
+allowBuilds:
+  '@ckeditor/ckeditor5-react': true
+  bcrypt: true
+  unrs-resolver: true

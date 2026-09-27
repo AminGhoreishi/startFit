@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useEffect, useRef, Suspense } from "react";
+import { useState, useEffect, useRef, useCallback, Suspense } from "react";
 import { useForm } from "react-hook-form";
 import { BiDumbbell, BiUser, BiPhone } from "react-icons/bi";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
@@ -26,6 +26,14 @@ function LoginFormContent() {
   const [showRegisterConfirmPassword, setShowRegisterConfirmPassword] =
     useState(false);
   const turnstileRef = useRef<TurnstileWidgetHandle>(null);
+
+  const handleCaptchaSuccess = useCallback((token: string) => {
+    setCaptchaToken(token);
+  }, []);
+
+  const handleCaptchaExpire = useCallback(() => {
+    setCaptchaToken("");
+  }, []);
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -253,8 +261,8 @@ function LoginFormContent() {
               <TurnstileWidget
                 key="login-turnstile"
                 ref={turnstileRef}
-                onSuccess={(token) => setCaptchaToken(token)}
-                onExpire={() => setCaptchaToken("")}
+                onSuccess={handleCaptchaSuccess}
+                onExpire={handleCaptchaExpire}
                 theme="dark"
               />
 
@@ -418,8 +426,8 @@ function LoginFormContent() {
               <TurnstileWidget
                 key="register-turnstile"
                 ref={turnstileRef}
-                onSuccess={(token) => setCaptchaToken(token)}
-                onExpire={() => setCaptchaToken("")}
+                onSuccess={handleCaptchaSuccess}
+                onExpire={handleCaptchaExpire}
                 theme="dark"
               />
 
