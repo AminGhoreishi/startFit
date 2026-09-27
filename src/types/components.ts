@@ -23,12 +23,6 @@ export interface PriceCardProps {
   hasDiscount?: boolean;
 }
 
-export interface PackageStatsProps {
-  studentCount: number;
-  rating: number;
-  reviewCount: number;
-}
-
 export interface PaginationProps {
   currentPage: number;
   totalPages: number;

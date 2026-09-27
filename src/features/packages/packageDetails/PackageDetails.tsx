@@ -6,7 +6,6 @@ import Breadcrumb from "./Breadcrumb";
 import PackageFeatures from "./PackageFeatures";
 import PriceCard from "./PriceCard";
 import TrustBadges from "./TrustBadges";
-import PackageStats from "./PackageStats";
 import { Check, Star, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { iconMap } from "@/utils/icons";
@@ -103,12 +102,6 @@ export default function PackageDetails({
                   {packageData.description}
                 </p>
               </div>
-
-              <PackageStats
-                studentCount={packageData.studentCount ?? 0}
-                rating={packageData.rating ?? 5}
-                reviewCount={packageData.reviewCount ?? 0}
-              />
 
               {packageData.highlights && packageData.highlights.length > 0 && (
                 <div className="bg-neutral-900/80 backdrop-blur-xl border border-amber-500/20 rounded-3xl p-5 sm:p-8 relative overflow-hidden">
