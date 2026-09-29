@@ -1,3 +1,5 @@
+import type { FitnessProfileData } from "@/types/fitness-profile";
+
 export const goalLabels: Record<string, string> = {
   weight_loss: "کاهش وزن",
   muscle_gain: "عضله‌سازی",
@@ -102,4 +104,33 @@ export const calculateNutritionTargets = (
     carbsPercent,
   };
 };
+
+export const VALID_GOALS = [
+  "weight_loss",
+  "muscle_gain",
+  "endurance",
+  "general_fitness",
+  "athletic_performance",
+  "rehabilitation",
+];
+
+export const VALID_EQUIPMENT = ["none", "home_basic", "gym_full"];
+export const VALID_EXPERIENCE = ["beginner", "intermediate", "advanced"];
+export const VALID_GENDERS = ["male", "female"];
+
+export function sanitizeProfile(doc: any): FitnessProfileData | null {
+  if (!doc) return null;
+  return {
+    gender: doc.gender || "male",
+    goal: doc.goal,
+    sessionsPerWeek: doc.sessionsPerWeek,
+    equipment: doc.equipment,
+    trainingExperience: doc.trainingExperience,
+    ageYears: doc.ageYears,
+    heightCm: doc.heightCm,
+    weightKg: doc.weightKg,
+    bodyPhotos: doc.bodyPhotos || [],
+    notes: doc.notes || "",
+  };
+}
 

@@ -4,6 +4,7 @@ import type { PhysicalTabProps } from "@/types/fitness-profile";
 export default function PhysicalTab({
   register,
   errors,
+  watchedAge,
   watchedHeight,
   watchedWeight,
   watchedGender,

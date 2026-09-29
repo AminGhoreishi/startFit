@@ -4,37 +4,13 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { NextRequest, NextResponse } from "next/server";
 import { uploadBase64ToS3 } from "@/lib/arvan";
-
-const VALID_GOALS = [
-  "weight_loss",
-  "muscle_gain",
-  "endurance",
-  "general_fitness",
-  "athletic_performance",
-  "rehabilitation",
-];
-
-const VALID_EQUIPMENT = ["none", "home_basic", "gym_full"];
-const VALID_EXPERIENCE = ["beginner", "intermediate", "advanced"];
-const VALID_GENDERS = ["male", "female"];
-const ALLOWED_MIME_TYPES = ["image/jpeg", "image/png", "image/webp"];
-const MAX_IMAGE_BUFFER_SIZE = 5 * 1024 * 1024;
-
-function sanitizeProfile(doc: any) {
-  if (!doc) return null;
-  return {
-    gender: doc.gender || "male",
-    goal: doc.goal,
-    sessionsPerWeek: doc.sessionsPerWeek,
-    equipment: doc.equipment,
-    trainingExperience: doc.trainingExperience,
-    ageYears: doc.ageYears,
-    heightCm: doc.heightCm,
-    weightKg: doc.weightKg,
-    bodyPhotos: doc.bodyPhotos || [],
-    notes: doc.notes || "",
-  };
-}
+import {
+  VALID_GOALS,
+  VALID_EQUIPMENT,
+  VALID_EXPERIENCE,
+  VALID_GENDERS,
+  sanitizeProfile,
+} from "@/utils/fitnessProfile";
 
 
 
@@ -152,35 +128,29 @@ export async function POST(req: NextRequest) {
 
     const sanitizedNotes = typeof notes === "string" ? notes.slice(0, 1000) : "";
 
-    let profile = await FitnessProfile.findOne({ userId: session.user.id });
-
-    if (profile) {
-      profile.gender = sanitizedGender;
-      profile.goal = goal;
-      profile.sessionsPerWeek = parsedSessions;
-      profile.equipment = equipment;
-      profile.trainingExperience = trainingExperience;
-      profile.ageYears = parsedAge;
-      profile.heightCm = parsedHeight;
-      profile.weightKg = parsedWeight;
-      profile.bodyPhotos = uploadedPhotos;
-      profile.notes = sanitizedNotes;
-      await profile.save();
-    } else {
-      profile = await FitnessProfile.create({
-        userId: session.user.id,
-        gender: sanitizedGender,
-        goal,
-        sessionsPerWeek: parsedSessions,
-        equipment,
-        trainingExperience,
-        ageYears: parsedAge,
-        heightCm: parsedHeight,
-        weightKg: parsedWeight,
-        bodyPhotos: uploadedPhotos,
-        notes: sanitizedNotes,
-      });
-    }
+    const profile = await FitnessProfile.findOneAndUpdate(
+      { userId: session.user.id },
+      {
+        $set: {
+          gender: sanitizedGender,
+          goal,
+          sessionsPerWeek: parsedSessions,
+          equipment,
+          trainingExperience,
+          ageYears: parsedAge,
+          heightCm: parsedHeight,
+          weightKg: parsedWeight,
+          bodyPhotos: uploadedPhotos,
+          notes: sanitizedNotes,
+        },
+      },
+      {
+        new: true,
+        upsert: true,
+        runValidators: true,
+        setDefaultsOnInsert: true,
+      },
+    );
 
     return NextResponse.json({
       message: "پروفایل ورزشی با موفقیت ثبت شد",

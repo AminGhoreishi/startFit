@@ -118,6 +118,7 @@ export interface BMICategoryDisplay {
 export interface PhysicalTabProps {
   register: UseFormRegister<FitnessFormInputs>;
   errors: FieldErrors<FitnessFormInputs>;
+  watchedAge: string;
   watchedHeight: string;
   watchedWeight: string;
   watchedGender: GenderOption;

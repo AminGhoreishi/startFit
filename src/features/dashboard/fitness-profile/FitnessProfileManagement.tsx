@@ -99,6 +99,7 @@ export default function FitnessProfileManagement({
   const watchedSessions = watch("sessionsPerWeek");
   const watchedEquipment = watch("equipment");
   const watchedExperience = watch("trainingExperience");
+  const watchedAge = watch("ageYears") || "25";
   const watchedHeight = watch("heightCm") || "175";
   const watchedWeight = watch("weightKg") || "70";
   const watchedGender = watch("gender") || "male";
@@ -308,6 +309,7 @@ export default function FitnessProfileManagement({
               <PhysicalTab
                 register={register}
                 errors={errors}
+                watchedAge={watchedAge}
                 watchedHeight={watchedHeight}
                 watchedWeight={watchedWeight}
                 watchedGender={watchedGender}
