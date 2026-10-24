@@ -16,14 +16,14 @@ import type {
   SubscriptionItem,
 } from "@/types/workout";
 import VideoPlayerModal from "@/components/VideoPlayerModal";
-import WorkoutProgramForm from "./WorkoutProgramForm";
-import ProgramDaysList from "./ProgramDaysList";
-import EditPlanInfoForm from "./EditPlanInfoForm";
-import SelectedPackageHeader from "./SelectedPackageHeader";
-import CreatePlanForm from "./CreatePlanForm";
-import AddWorkoutDropdown from "./AddWorkoutDropdown";
-import PackageCard from "./PackageCard";
-import ProgramDayExercisesDetail from "./ProgramDayExercisesDetail";
+import WorkoutProgramForm from "./days/WorkoutProgramForm";
+import ProgramDaysList from "./days/ProgramDaysList";
+import EditPlanInfoForm from "./plans/EditPlanInfoForm";
+import SelectedPackageHeader from "./packages/SelectedPackageHeader";
+import CreatePlanForm from "./plans/CreatePlanForm";
+import AddWorkoutDropdown from "./days/AddWorkoutDropdown";
+import PackageCard from "./packages/PackageCard";
+import ProgramDayExercisesDetail from "./exercises/ProgramDayExercisesDetail";
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 const EMPTY_ARRAY: any[] = [];

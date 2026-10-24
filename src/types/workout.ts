@@ -214,6 +214,28 @@ export interface WorkoutProgramFormInputs {
   exerciseInput?: string;
 }
 
+export interface ExerciseFormInputs {
+  name: string;
+  description?: string;
+  videoId?: string;
+  videoId2?: string;
+  sets: number;
+  reps: string;
+  weight?: string;
+  restSec: number;
+}
+
+export const defaultExerciseValues: ExerciseFormInputs = {
+  name: "",
+  description: "",
+  videoId: "",
+  videoId2: "",
+  sets: 3,
+  reps: "10-12",
+  weight: "",
+  restSec: 60,
+};
+
 export interface WorkoutProgramFormProps {
   workoutPlanId: string;
   userId?: string;
