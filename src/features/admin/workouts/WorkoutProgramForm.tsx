@@ -2,13 +2,35 @@
 
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { Plus, X, Dumbbell, Video as VideoIcon, Trash2 } from "lucide-react";
+import { Plus, X, Dumbbell, Video as VideoIcon, Trash2, Edit } from "lucide-react";
 import type {
   WorkoutProgramFormProps,
   WorkoutProgramFormInputs,
   ProgramExerciseItem,
 } from "@/types/workout";
 import { showAlert } from "@/utils/alert";
+
+interface ExerciseFormInputs {
+  name: string;
+  description?: string;
+  videoId?: string;
+  videoId2?: string;
+  sets: number;
+  reps: string;
+  weight?: string;
+  restSec: number;
+}
+
+const defaultExerciseValues: ExerciseFormInputs = {
+  name: "",
+  description: "",
+  videoId: "",
+  videoId2: "",
+  sets: 3,
+  reps: "10-12",
+  weight: "",
+  restSec: 60,
+};
 
 export default function WorkoutProgramForm({
   workoutPlanId,
@@ -17,36 +39,43 @@ export default function WorkoutProgramForm({
   onSuccess,
   onCancel,
 }: WorkoutProgramFormProps) {
-  const { register, handleSubmit, reset } = useForm<WorkoutProgramFormInputs>();
-  const [exercisesList, setExercisesList] = useState<ProgramExerciseItem[]>([]);
+  const {
+    register: registerDay,
+    handleSubmit: handleSubmitDay,
+    reset: resetDay,
+  } = useForm<WorkoutProgramFormInputs>();
 
-  const [exerciseName, setExerciseName] = useState("");
-  const [description, setDescription] = useState("");
-  const [videoId, setVideoId] = useState("");
-  const [videoId2, setVideoId2] = useState("");
-  const [sets, setSets] = useState(3);
-  const [reps, setReps] = useState("10-12");
-  const [weight, setWeight] = useState("");
-  const [restSec, setRestSec] = useState(60);
+  const {
+    register: registerExercise,
+    handleSubmit: handleSubmitExercise,
+    reset: resetExercise,
+  } = useForm<ExerciseFormInputs>({
+    defaultValues: defaultExerciseValues,
+  });
+
+  const [exercisesList, setExercisesList] = useState<ProgramExerciseItem[]>([]);
+  const [editingExerciseIndex, setEditingExerciseIndex] = useState<number | null>(null);
 
   useEffect(() => {
     if (editingProgramDay) {
-      reset({
+      resetDay({
         day: editingProgramDay.day,
         muscleGroup: editingProgramDay.muscleGroup,
       });
       setExercisesList(editingProgramDay.exercises || []);
     } else {
-      reset({
+      resetDay({
         day: "",
         muscleGroup: "",
       });
       setExercisesList([]);
     }
-  }, [editingProgramDay, reset]);
+    setEditingExerciseIndex(null);
+    resetExercise(defaultExerciseValues);
+  }, [editingProgramDay, resetDay, resetExercise]);
 
-  const handleAddExercise = () => {
-    const trimmed = exerciseName.trim();
+  const handleSaveExercise = (data: ExerciseFormInputs) => {
+    const trimmed = data.name.trim();
     if (!trimmed) {
       showAlert({
         title: "خطا",
@@ -56,37 +85,65 @@ export default function WorkoutProgramForm({
       return;
     }
 
-    const trimmedWeight = weight.trim();
+    const trimmedWeight = data.weight ? String(data.weight).trim() : "";
     const parsedWeight = trimmedWeight
       ? !isNaN(Number(trimmedWeight))
         ? Number(trimmedWeight)
         : trimmedWeight
       : undefined;
 
-    const newExercise: ProgramExerciseItem = {
+    const exerciseItem: ProgramExerciseItem = {
       name: trimmed,
-      description: description.trim() || undefined,
-      videoId: videoId || null,
-      videoId2: videoId2 || null,
-      sets: Number(sets) || 1,
-      reps: reps.trim() || "10",
+      description: data.description?.trim() || undefined,
+      videoId: data.videoId || null,
+      videoId2: data.videoId2 || null,
+      sets: Number(data.sets) || 1,
+      reps: data.reps?.trim() || "10",
       weight: parsedWeight,
-      restSec: Number(restSec) || 60,
+      restSec: Number(data.restSec) || 60,
     };
 
-    setExercisesList((prev) => [...prev, newExercise]);
+    if (editingExerciseIndex !== null) {
+      setExercisesList((prev) =>
+        prev.map((item, idx) => (idx === editingExerciseIndex ? exerciseItem : item))
+      );
+      setEditingExerciseIndex(null);
+    } else {
+      setExercisesList((prev) => [...prev, exerciseItem]);
+    }
 
-    setExerciseName("");
-    setDescription("");
-    setVideoId("");
-    setVideoId2("");
-    setSets(3);
-    setReps("10-12");
-    setWeight("");
-    setRestSec(60);
+    resetExercise(defaultExerciseValues);
+  };
+
+  const handleEditExercise = (exercise: ProgramExerciseItem, index: number) => {
+    setEditingExerciseIndex(index);
+    resetExercise({
+      name: exercise.name,
+      description: exercise.description || "",
+      videoId: exercise.videoId || "",
+      videoId2: exercise.videoId2 || "",
+      sets: exercise.sets,
+      reps: exercise.reps,
+      weight:
+        exercise.weight !== undefined && exercise.weight !== null
+          ? String(exercise.weight)
+          : "",
+      restSec: exercise.restSec,
+    });
+  };
+
+  const handleCancelEditExercise = () => {
+    setEditingExerciseIndex(null);
+    resetExercise(defaultExerciseValues);
   };
 
   const handleRemoveExercise = (indexToRemove: number) => {
+    if (editingExerciseIndex === indexToRemove) {
+      setEditingExerciseIndex(null);
+      resetExercise(defaultExerciseValues);
+    } else if (editingExerciseIndex !== null && indexToRemove < editingExerciseIndex) {
+      setEditingExerciseIndex(editingExerciseIndex - 1);
+    }
     setExercisesList((prev) => prev.filter((_, i) => i !== indexToRemove));
   };
 
@@ -177,7 +234,7 @@ export default function WorkoutProgramForm({
 
   return (
     <form
-      onSubmit={handleSubmit(onSubmit)}
+      onSubmit={handleSubmitDay(onSubmit)}
       className="bg-white/5 border border-white/10 rounded-2xl p-5 space-y-4 text-right font-danaMed animate-in fade-in slide-in-from-top-4 duration-200"
       dir="rtl"
     >
@@ -204,7 +261,7 @@ export default function WorkoutProgramForm({
             <input
               type="text"
               placeholder="مثال: شنبه یا روز اول"
-              {...register("day", { required: true })}
+              {...registerDay("day", { required: true })}
               className="w-full bg-white/5 border border-white/10 rounded-xl px-3.5 py-2 text-white text-xs placeholder:text-white/30 focus:outline-none focus:border-amber-400 transition-colors"
               required
             />
@@ -217,16 +274,36 @@ export default function WorkoutProgramForm({
             <input
               type="text"
               placeholder="مثال: سینه و پشت بازو"
-              {...register("muscleGroup")}
+              {...registerDay("muscleGroup")}
               className="w-full bg-white/5 border border-white/10 rounded-xl px-3.5 py-2 text-white text-xs placeholder:text-white/30 focus:outline-none focus:border-amber-400 transition-colors"
             />
           </div>
         </div>
 
         <div className="bg-white/[0.03] border border-white/10 rounded-xl p-4 space-y-3">
-          <div className="text-xs font-bold text-amber-400 flex items-center gap-1.5">
-            <Plus className="w-3.5 h-3.5" />
-            <span>افزودن حرکت تمرینی به این روز</span>
+          <div className="flex items-center justify-between">
+            <div className="text-xs font-bold text-amber-400 flex items-center gap-1.5">
+              {editingExerciseIndex !== null ? (
+                <>
+                  <Edit className="w-3.5 h-3.5" />
+                  <span>ویرایش حرکت تمرینی</span>
+                </>
+              ) : (
+                <>
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>افزودن حرکت تمرینی به این روز</span>
+                </>
+              )}
+            </div>
+            {editingExerciseIndex !== null && (
+              <button
+                type="button"
+                onClick={handleCancelEditExercise}
+                className="text-[11px] text-white/50 hover:text-white transition-colors cursor-pointer"
+              >
+                انصراف از ویرایش
+              </button>
+            )}
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
@@ -236,8 +313,7 @@ export default function WorkoutProgramForm({
               </label>
               <input
                 type="text"
-                value={exerciseName}
-                onChange={(e) => setExerciseName(e.target.value)}
+                {...registerExercise("name")}
                 placeholder="مثال: پرس بالاسینه هالتر"
                 className="w-full bg-white/5 border border-white/10 rounded-xl px-3.5 py-2 text-white text-xs placeholder:text-white/30 focus:outline-none focus:border-amber-400 transition-colors"
               />
@@ -249,8 +325,7 @@ export default function WorkoutProgramForm({
               </label>
               <input
                 type="text"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
+                {...registerExercise("description")}
                 placeholder="مثال: مکث در اوج انقباض، سوپرست با حرکت بعد"
                 className="w-full bg-white/5 border border-white/10 rounded-xl px-3.5 py-2 text-white text-xs placeholder:text-white/30 focus:outline-none focus:border-amber-400 transition-colors"
               />
@@ -263,8 +338,7 @@ export default function WorkoutProgramForm({
                 ویدیو آموزشی اول
               </label>
               <select
-                value={videoId}
-                onChange={(e) => setVideoId(e.target.value)}
+                {...registerExercise("videoId")}
                 className="w-full bg-neutral-900 border border-white/10 rounded-xl px-3 py-2 text-white text-xs focus:outline-none focus:border-amber-400 cursor-pointer"
               >
                 <option value="">بدون ویدیو</option>
@@ -281,8 +355,7 @@ export default function WorkoutProgramForm({
                 ویدیو آموزشی دوم (اختیاری)
               </label>
               <select
-                value={videoId2}
-                onChange={(e) => setVideoId2(e.target.value)}
+                {...registerExercise("videoId2")}
                 className="w-full bg-neutral-900 border border-white/10 rounded-xl px-3 py-2 text-white text-xs focus:outline-none focus:border-amber-400 cursor-pointer"
               >
                 <option value="">بدون ویدیو</option>
@@ -303,8 +376,7 @@ export default function WorkoutProgramForm({
               <input
                 type="number"
                 min={1}
-                value={sets}
-                onChange={(e) => setSets(Number(e.target.value))}
+                {...registerExercise("sets", { valueAsNumber: true })}
                 className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-1.5 text-white text-xs focus:outline-none focus:border-amber-400 ss02"
               />
             </div>
@@ -315,8 +387,7 @@ export default function WorkoutProgramForm({
               </label>
               <input
                 type="text"
-                value={reps}
-                onChange={(e) => setReps(e.target.value)}
+                {...registerExercise("reps")}
                 placeholder="10-12"
                 className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-1.5 text-white text-xs focus:outline-none focus:border-amber-400 ss02"
               />
@@ -328,8 +399,7 @@ export default function WorkoutProgramForm({
               </label>
               <input
                 type="text"
-                value={weight}
-                onChange={(e) => setWeight(e.target.value)}
+                {...registerExercise("weight")}
                 placeholder="مثلاً: 15"
                 className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-1.5 text-white text-xs focus:outline-none focus:border-amber-400 ss02"
               />
@@ -342,21 +412,44 @@ export default function WorkoutProgramForm({
               <input
                 type="number"
                 min={0}
-                value={restSec}
-                onChange={(e) => setRestSec(Number(e.target.value))}
+                {...registerExercise("restSec", { valueAsNumber: true })}
                 className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-1.5 text-white text-xs focus:outline-none focus:border-amber-400 ss02"
               />
             </div>
           </div>
 
-          <button
-            type="button"
-            onClick={handleAddExercise}
-            className="w-full bg-amber-500/15 hover:bg-amber-500/25 text-amber-400 border border-amber-500/30 py-2 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-all cursor-pointer"
-          >
-            <Plus className="w-3.5 h-3.5" />
-            <span>ثبت و اضافه کردن این حرکت به لیست</span>
-          </button>
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={handleSubmitExercise(handleSaveExercise)}
+              className={`flex-1 py-2 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+                editingExerciseIndex !== null
+                  ? "bg-amber-500 hover:bg-amber-600 text-black font-bold"
+                  : "bg-amber-500/15 hover:bg-amber-500/25 text-amber-400 border border-amber-500/30"
+              }`}
+            >
+              {editingExerciseIndex !== null ? (
+                <>
+                  <Edit className="w-3.5 h-3.5" />
+                  <span>بروزرسانی حرکت در لیست</span>
+                </>
+              ) : (
+                <>
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>ثبت و اضافه کردن این حرکت به لیست</span>
+                </>
+              )}
+            </button>
+            {editingExerciseIndex !== null && (
+              <button
+                type="button"
+                onClick={handleCancelEditExercise}
+                className="bg-white/10 hover:bg-white/15 text-white py-2 px-4 rounded-xl text-xs transition-colors cursor-pointer"
+              >
+                انصراف
+              </button>
+            )}
+          </div>
         </div>
 
         {exercisesList.length > 0 && (
@@ -368,7 +461,11 @@ export default function WorkoutProgramForm({
               {exercisesList.map((exercise, idx) => (
                 <div
                   key={`${exercise.name}-${idx}`}
-                  className="bg-white/5 border border-white/10 rounded-xl p-3 flex items-center justify-between gap-2 group hover:border-amber-500/30 transition-all"
+                  className={`rounded-xl p-3 flex items-center justify-between gap-2 group transition-all border ${
+                    editingExerciseIndex === idx
+                      ? "bg-amber-500/10 border-amber-500/50"
+                      : "bg-white/5 border border-white/10 hover:border-amber-500/30"
+                  }`}
                 >
                   <div className="flex items-center gap-2.5">
                     <span className="w-5 h-5 rounded-md bg-amber-500/10 text-amber-400 text-[10px] font-bold flex items-center justify-center shrink-0 ss02">
@@ -404,13 +501,28 @@ export default function WorkoutProgramForm({
                     </div>
                   </div>
 
-                  <button
-                    type="button"
-                    onClick={() => handleRemoveExercise(idx)}
-                    className="text-white/30 hover:text-red-400 p-1 rounded-lg transition-colors cursor-pointer"
-                  >
-                    <Trash2 className="w-3.5 h-3.5" />
-                  </button>
+                  <div className="flex items-center gap-1 shrink-0">
+                    <button
+                      type="button"
+                      onClick={() => handleEditExercise(exercise, idx)}
+                      className={`p-1 rounded-lg transition-colors cursor-pointer ${
+                        editingExerciseIndex === idx
+                          ? "text-amber-400"
+                          : "text-white/30 hover:text-amber-400"
+                      }`}
+                      title="ویرایش حرکت"
+                    >
+                      <Edit className="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveExercise(idx)}
+                      className="text-white/30 hover:text-red-400 p-1 rounded-lg transition-colors cursor-pointer"
+                      title="حذف حرکت"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
