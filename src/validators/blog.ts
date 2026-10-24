@@ -2,6 +2,7 @@ import validator from "./index";
 
 const blogSchema = {
   title: { type: "string", empty: false, min: 3 },
+  slug: { type: "string", optional: true },
   content: { type: "string", empty: false },
   excerpt: { type: "string", optional: true },
   category: { type: "string", optional: true },
@@ -15,6 +16,7 @@ const blogSchema = {
 const blogUpdateSchema = {
   id: { type: "string", empty: false },
   title: { type: "string", empty: false, min: 3, optional: true },
+  slug: { type: "string", optional: true },
   content: { type: "string", empty: false, optional: true },
   excerpt: { type: "string", optional: true },
   category: { type: "string", optional: true },

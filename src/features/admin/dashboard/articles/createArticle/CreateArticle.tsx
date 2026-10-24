@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import useSWR from "swr";
 import { useForm, Controller, useWatch } from "react-hook-form";
 import Link from "next/link";
-import { ArrowRight, Save, Eye, X, Image as ImageIcon, Loader2 } from "lucide-react";
+import { ArrowRight, Save, Eye, X, Image as ImageIcon, Loader2, Link2 } from "lucide-react";
 import Image from "next/image";
 import dynamic from "next/dynamic";
 import { showAlert } from "@/utils/alert";
@@ -66,6 +66,7 @@ export default function CreateArticle({ initialAuthor }: CreateArticleProps) {
   } = useForm<CreateArticleFormInputs>({
     defaultValues: {
       title: "",
+      slug: "",
       category: "بدنسازی",
       content: "",
       excerpt: "",
@@ -126,6 +127,9 @@ export default function CreateArticle({ initialAuthor }: CreateArticleProps) {
     try {
       const formData = new FormData();
       formData.append("title", data.title);
+      if (data.slug) {
+        formData.append("slug", data.slug);
+      }
       formData.append("category", data.category);
       formData.append("content", data.content);
       formData.append("excerpt", data.excerpt || "");
@@ -232,18 +236,45 @@ export default function CreateArticle({ initialAuthor }: CreateArticleProps) {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2 space-y-6">
-            <div className="bg-white/5 backdrop-blur-lg border border-white/10 rounded-xl p-4 sm:p-6">
-              <label className="block text-xs sm:text-sm text-white mb-2 sm:mb-3 font-semibold">
-                عنوان مقاله
-              </label>
-              <input
-                {...register("title", { required: "عنوان مقاله الزامی است" })}
-                placeholder="عنوان جذاب مقاله خود را وارد کنید..."
-                className="w-full bg-white/5 border border-white/10 rounded-lg px-3.5 sm:px-4 py-2.5 sm:py-3 text-white text-base sm:text-xl placeholder:text-white/40 focus:outline-none focus:border-amber-500/30 font-morabbaReg"
-              />
-              {errors.title && (
-                <p className="text-red-400 text-xs sm:text-sm mt-2">{errors.title.message}</p>
-              )}
+            <div className="bg-white/5 backdrop-blur-lg border border-white/10 rounded-xl p-4 sm:p-6 space-y-4">
+              <div>
+                <label className="block text-xs sm:text-sm text-white mb-2 sm:mb-3 font-semibold">
+                  عنوان مقاله
+                </label>
+                <input
+                  {...register("title", { required: "عنوان مقاله الزامی است" })}
+                  placeholder="عنوان جذاب مقاله خود را وارد کنید..."
+                  className="w-full bg-white/5 border border-white/10 rounded-lg px-3.5 sm:px-4 py-2.5 sm:py-3 text-white text-base sm:text-xl placeholder:text-white/40 focus:outline-none focus:border-amber-500/30 font-morabbaReg"
+                />
+                {errors.title && (
+                  <p className="text-red-400 text-xs sm:text-sm mt-2">{errors.title.message}</p>
+                )}
+              </div>
+
+              <div className="pt-2 border-t border-white/5">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 mb-2">
+                  <label className="text-xs sm:text-sm text-white/90 font-medium flex items-center gap-1.5">
+                    <Link2 className="w-3.5 h-3.5 text-amber-400" />
+                    <span>پیوند یکتا (Slug انگلیسی)</span>
+                  </label>
+                  <span className="text-[11px] text-amber-400/80">
+                    اختیاری - برای کوتاه و تمیز شدن لینک مقاله
+                  </span>
+                </div>
+                <div className="relative flex items-center" dir="ltr">
+                  <span className="absolute left-3 text-white/40 text-xs font-mono select-none">
+                    /article/
+                  </span>
+                  <input
+                    {...register("slug")}
+                    placeholder="workout-split-guide"
+                    className="w-full bg-white/5 border border-white/10 rounded-lg pl-18 pr-3.5 py-2 sm:py-2.5 text-white text-xs sm:text-sm placeholder:text-white/30 focus:outline-none focus:border-amber-500/30 text-left font-mono"
+                  />
+                </div>
+                <p className="text-white/40 text-[11px] mt-1.5 text-right" dir="rtl">
+                  فقط از حروف انگلیسی، اعداد و خط تیره (-) استفاده کنید.
+                </p>
+              </div>
             </div>
 
             <div className="bg-white/5 backdrop-blur-lg border border-white/10 rounded-xl p-4 sm:p-6">

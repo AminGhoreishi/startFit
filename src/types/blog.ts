@@ -117,6 +117,7 @@ export interface ArticlePageProps {
 
 export interface CreateArticleFormInputs {
   title: string;
+  slug?: string;
   category: string;
   content: string;
   excerpt: string;

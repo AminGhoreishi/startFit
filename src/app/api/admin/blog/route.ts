@@ -7,18 +7,23 @@ import { uploadFileToS3, deleteFileFromS3 } from "@/lib/arvan";
 import { validateBlog, validateBlogUpdate } from "@/validators/blog";
 import { revalidateTag, revalidatePath } from "next/cache";
 
-async function generateUniqueSlug(title: string): Promise<string> {
-  const baseSlug = title
+async function generateUniqueSlug(text: string, currentBlogId?: string): Promise<string> {
+  const baseSlug = text
     .trim()
     .toLowerCase()
     .replace(/[^a-zA-Z0-9\u0600-\u06FF\s-]/g, "")
     .replace(/\s+/g, "-")
-    .replace(/-+/g, "-");
+    .replace(/-+/g, "-")
+    .replace(/^-+|-+$/g, "");
 
   let slug = baseSlug || "article";
   let count = 1;
 
-  while (await Blog.findOne({ slug })) {
+  while (true) {
+    const existing = await Blog.findOne({ slug });
+    if (!existing || (currentBlogId && existing._id.toString() === currentBlogId.toString())) {
+      break;
+    }
     slug = `${baseSlug}-${count}`;
     count++;
   }
@@ -140,6 +145,7 @@ export async function POST(req: NextRequest) {
 
     const formData = await req.formData();
     const title = formData.get("title") as string;
+    const customSlug = formData.get("slug") as string;
     const content = formData.get("content") as string;
     const excerpt = formData.get("excerpt") as string;
     const category = formData.get("category") as string;
@@ -164,6 +170,7 @@ export async function POST(req: NextRequest) {
 
     const validationData = {
       title: title || undefined,
+      slug: customSlug?.trim() || undefined,
       content: content || undefined,
       excerpt: excerpt || undefined,
       category: category || undefined,
@@ -182,7 +189,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const slug = await generateUniqueSlug(title);
+    const slug = await generateUniqueSlug(customSlug?.trim() || title);
 
     let imageUrl = "";
     if (imageFile && imageFile instanceof File && imageFile.size > 0) {
@@ -244,6 +251,7 @@ export async function PUT(req: NextRequest) {
     const formData = await req.formData();
     const id = formData.get("id") as string;
     const title = formData.get("title") as string;
+    const customSlug = formData.get("slug") as string;
     const content = formData.get("content") as string;
     const excerpt = formData.get("excerpt") as string;
     const category = formData.get("category") as string;
@@ -269,6 +277,7 @@ export async function PUT(req: NextRequest) {
     const validationData = {
       id: id || undefined,
       title: title || undefined,
+      slug: customSlug?.trim() || undefined,
       content: content || undefined,
       excerpt: excerpt || undefined,
       category: category || undefined,
@@ -295,8 +304,18 @@ export async function PUT(req: NextRequest) {
       );
     }
 
-    if (title && title !== blog.title) {
-      blog.slug = await generateUniqueSlug(title);
+    const trimmedCustomSlug = customSlug?.trim();
+    if (trimmedCustomSlug && trimmedCustomSlug !== blog.slug) {
+      const oldSlug = blog.slug;
+      blog.slug = await generateUniqueSlug(trimmedCustomSlug, blog._id);
+      if (oldSlug) {
+        revalidatePath(`/article/${oldSlug}`);
+      }
+    } else if (!blog.slug && title) {
+      blog.slug = await generateUniqueSlug(title, blog._id);
+    }
+
+    if (title !== undefined) {
       blog.title = title;
     }
 
