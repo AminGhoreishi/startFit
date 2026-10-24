@@ -147,6 +147,12 @@ export interface CreateArticleProps {
   initialAuthor?: ArticleAuthorInfo | null;
 }
 
+export interface EditArticleProps {
+  articleId?: string;
+}
+
+export type EditArticleFormInputs = CreateArticleFormInputs;
+
 export interface PublicArticleItem {
   _id: string;
   title: string;
